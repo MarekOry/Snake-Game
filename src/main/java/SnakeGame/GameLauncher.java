@@ -20,6 +20,7 @@ public class GameLauncher {
                 Snake snake = new Snake(boardWidth, boardHeight);
                 window.add(snake);
                 window.pack();
+                snake.requestFocus();
             }
         });
     }
