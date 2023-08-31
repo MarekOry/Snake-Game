@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
 import java.util.Random;
 
 
@@ -18,6 +19,7 @@ class Snake extends JPanel  implements ActionListener, KeyListener {
     private int verticalVelocity;
 
     private Square head;
+    private ArrayList<Square> tail;
 
     private Square apple;
 
@@ -29,8 +31,11 @@ class Snake extends JPanel  implements ActionListener, KeyListener {
         addKeyListener(this);
 
         head = new Square(boardWidth/squareSize/2,boardHeight/squareSize/2);
+        tail = new ArrayList<>();
+
         random = new Random();
         apple = new Square(random.nextInt(boardWidth/squareSize), random.nextInt(boardHeight/squareSize));
+        newApple();
 
         horizontalVelocity = 0;
         verticalVelocity = -1;
@@ -57,11 +62,41 @@ class Snake extends JPanel  implements ActionListener, KeyListener {
         graphics.setColor(Color.GREEN);
         graphics.fill3DRect(head.x*squareSize, head.y*squareSize, squareSize, squareSize, true);
 
+        for(int i =0; i<tail.size(); i++) {
+            Square tailPart = tail.get(i);
+            graphics.fill3DRect(tailPart.x*squareSize, tailPart.y*squareSize, squareSize, squareSize, true);
+        }
     }
 
     void move() {
+        if(collision(head, apple)) {
+            tail.add(new Square(apple.x, apple.y));
+            newApple();
+        }
+
+        for (int i = tail.size()-1;i>=0; i--) {
+            Square tailPart = tail.get(i);
+            if (i==0) {
+                tailPart.x = head.x;
+                tailPart.y = head.y;
+            } else {
+                Square prevTailPart = tail.get(i-1);
+                tailPart.x = prevTailPart.x;
+                tailPart.y = prevTailPart.y;
+            }
+        }
+
         head.x += horizontalVelocity;
         head.y += verticalVelocity;
+    }
+
+    void newApple() {
+        apple.x = random.nextInt(boardWidth/squareSize);
+        apple.y = random.nextInt(boardHeight/squareSize);
+    }
+
+    boolean collision(Square a, Square b) {
+        return a.x == b.x && a.y == b.y;
     }
 
     @Override
