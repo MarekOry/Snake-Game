@@ -7,13 +7,13 @@ public class GameLauncher {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                int boardWidth = 800;
+                int boardWidth = 500;
                 int boardHeight = boardWidth;
 
                 JFrame window = new JFrame("Snake");
                 window.setVisible(true);
                 window.setSize(boardWidth, boardHeight);
-                window.setLocationRelativeTo(null); //centers on screen
+                window.setLocationRelativeTo(null);
                 window.setResizable(false);
                 window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 

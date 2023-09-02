@@ -17,6 +17,7 @@ class Snake extends JPanel  implements ActionListener, KeyListener {
     private Timer gameLoop;
     private int horizontalVelocity;
     private int verticalVelocity;
+    private boolean gameOver = false;
 
     private Square head;
     private ArrayList<Square> tail;
@@ -66,14 +67,32 @@ class Snake extends JPanel  implements ActionListener, KeyListener {
             Square tailPart = tail.get(i);
             graphics.fill3DRect(tailPart.x*squareSize, tailPart.y*squareSize, squareSize, squareSize, true);
         }
+
+        graphics.setFont(new Font("Arial",Font.PLAIN, 14));
+        graphics.setColor(Color.WHITE);
+        graphics.drawString("Score: " + tail.size(), squareSize - 10, squareSize);
+
+        if(gameOver) {
+            String gameOverString = "GAME OVER";
+            Font gameOverFont;
+            graphics.setFont(gameOverFont = new Font("Serif", Font.BOLD, 30));
+            graphics.setColor(Color.YELLOW);
+            FontMetrics gameOverFontMetrics = graphics.getFontMetrics(gameOverFont);
+            //draw string in the middle of the board
+            graphics.drawString(gameOverString,
+                    (boardWidth-gameOverFontMetrics.stringWidth(gameOverString))/2,
+                    ((boardHeight-gameOverFontMetrics.getHeight())/2) + gameOverFontMetrics.getAscent());
+        }
     }
 
     void move() {
+        //eat apple
         if(collision(head, apple)) {
             tail.add(new Square(apple.x, apple.y));
             newApple();
         }
 
+        //tail
         for (int i = tail.size()-1;i>=0; i--) {
             Square tailPart = tail.get(i);
             if (i==0) {
@@ -88,6 +107,19 @@ class Snake extends JPanel  implements ActionListener, KeyListener {
 
         head.x += horizontalVelocity;
         head.y += verticalVelocity;
+
+        //eat tail
+        for (int i = 0; i<tail.size(); i++) {
+            Square tailPart = tail.get(i);
+            if (collision(head, tailPart)) {
+                gameOver = true;
+            }
+        }
+
+        //walls
+        if (head.x*squareSize < 0 || head.x*squareSize > boardWidth || head.y*squareSize < 0 || head.y*squareSize > boardHeight ) {
+            gameOver = true;
+        }
     }
 
     void newApple() {
@@ -103,6 +135,7 @@ class Snake extends JPanel  implements ActionListener, KeyListener {
     public void actionPerformed(ActionEvent e) {
         move();
         repaint();
+        if (gameOver) gameLoop.stop();
     }
 
     @Override
